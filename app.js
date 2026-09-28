@@ -1,11 +1,23 @@
-const express = require("express");
-const app = express();
-const PORT = 3000;
+require('dotenv').config(); // baris pertama
+const express = require("express"); // impor express
+const app = express(); //instalansi
+const cors = require('cors');
+const PORT = process.env.PORT || 3000; // sebelumnya: const PORT = 3000;
 
-// Middleware agar req.body (JSON) dapat dibaca
+function logger(req, res, next) {
+  const waktu = new Date().toISOString();
+  console.log(`[${waktu}] ${req.method} ${req.url}`);
+  next(); // wajib, agar request lanjut ke handler berikutnya
+}
+
+// Didaftarkan sebelum route agar mencatat seluruh request
+app.use(logger);
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
+
 app.use(express.json());
-
-
 // Data sementara (disimpan di memori, hilang saat server restart)
 let mahasiswa = [
   { id: 1, nama: "Andi", jurusan: "Sistem Informasi" },
@@ -13,15 +25,12 @@ let mahasiswa = [
 ];
 let nextId = 3; // penghitung id untuk data baru
 
+// route /
 app.get("/", (req, res) => {
-  res.send("Server Express.js berjalan pada PORT 3000! Nodemon");
+  res.send("Server Express.js berjalan pada port 3000!");
 });
 
-// app.get("/mahasiswa", (req, res) => {
-//   res.send(mahasiswa);
-// });
-
-// GET /mahasiswa -> seluruh data, bisa difilter: /mahasiswa?jurusan=Informasi
+// GET /mahasiswa -> seluruh data, bisa difilter: /mahasiswa?jurusan=Informatika
 app.get('/mahasiswa', (req, res) => {
   const { jurusan } = req.query;
 
@@ -33,6 +42,7 @@ app.get('/mahasiswa', (req, res) => {
   res.json(mahasiswa);
 });
 
+// GET /mahasiswa/:id -> menampilkan satu data berdasarkan id
 app.get("/mahasiswa/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const data = mahasiswa.find((m) => m.id === id);
@@ -41,6 +51,9 @@ app.get("/mahasiswa/:id", (req, res) => {
   res.json(data);
 });
 
+// Menjalankan aplikasi pada port 3000
+// POST /mahasiswa
+// Body: { "nama": "Citra", "jurusan": "Sistem Informasi" }
 app.post('/mahasiswa', (req, res) => {
   const { nama, jurusan } = req.body;
 
@@ -53,34 +66,6 @@ app.post('/mahasiswa', (req, res) => {
   mahasiswa.push(baru);
   res.status(201).json(baru);
 });
-
-// PUT /mahasiswa/2
-// Body: { "nama": "Budi Santoso", "jurusan": "Informatika" }
-app.put('/mahasiswa/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = mahasiswa.findIndex((m) => m.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ message: 'Data tidak ditemukan' });
-  }
-
-  mahasiswa[index] = { ...mahasiswa[index], ...req.body, id };
-  res.json(mahasiswa[index]);
-});
-
-// DELETE /mahasiswa/2
-app.delete('/mahasiswa/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = mahasiswa.findIndex((m) => m.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ message: 'Data tidak ditemukan' });
-  }
-
-  mahasiswa.splice(index, 1);
-  res.status(204).send();
-});
-
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });

@@ -1,6 +1,6 @@
 let mahasiswa = [
-  { id: 1, nama: "Andi", jurusan: "Sistem Informasi" },
-  { id: 2, nama: "Budi", jurusan: "Informatika" },
+  { id: 1, nama: 'Andi', jurusan: 'Sistem Informasi' },
+  { id: 2, nama: 'Budi', jurusan: 'Informatika' },
 ];
 let nextId = 3;
 

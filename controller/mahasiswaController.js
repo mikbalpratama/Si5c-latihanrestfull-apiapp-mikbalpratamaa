@@ -1,4 +1,4 @@
-const mahasiswaModel = require('../models/MahasiswaModel');
+const mahasiswaModel = require('../models/mahasiswaModel');
 const { errorHttp } = require('../middlewares/errorHandler');
 
 exports.getAll = (req, res) => {

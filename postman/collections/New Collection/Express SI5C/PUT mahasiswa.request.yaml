@@ -1,8 +1,0 @@
-$kind: http-request
-name: PUT mahasiswa
-url: http://localhost:3000/mahasiswa/1
-method: PUT
-body:
-  type: json
-  content: '{"nama": "Budi Santoso", "jurusan": "Informatika"}'
-order: 4410893870876758

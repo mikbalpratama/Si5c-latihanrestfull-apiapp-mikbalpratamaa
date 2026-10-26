@@ -1,5 +1,0 @@
-$kind: http-request
-name: DELETE mahasiswa
-url: http://localhost:3000/mahasiswa/2
-method: DELETE
-order: 4498681389381338

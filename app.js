@@ -4,6 +4,11 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');   // tambahkan di antara require lainnya
 
+if (!process.env.JWT_SECRET) {
+  console.error('JWT_SECRET belum diisi di .env');
+  process.exit(1);
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -34,7 +39,8 @@ const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 const mahasiswaRoutes = require('./routes/mahasiswaRoutes');
 const fakultasRoutes = require('./routes/fakultasRoutes');
 const prodiRoutes = require('./routes/prodiRoutes');   // bersama require lainnya
-
+const authRoutes = require('./routes/authRoutes');   // bersama require lainnya
+                         // sebelum app.use(notFoundHandler)
 
 // ---------- Middleware global ----------
 app.use(logger);
@@ -47,12 +53,6 @@ app.use(cors({
 app.use(express.json());
 
 // ---------- Route dasar ----------
-app.use('/mahasiswa', mahasiswaRoutes);
-app.use('/fakultas', fakultasRoutes);
-app.use('/prodi', prodiRoutes);                 
-app.use(express.json());
-
-// ---------- Route dasar ----------
 app.get('/', (req, res) => {
   res.send('Server Express.js berjalan!');
 });
@@ -61,11 +61,9 @@ app.get('/', (req, res) => {
 app.use('/mahasiswa', mahasiswaRoutes);
 app.use('/fakultas', fakultasRoutes);
 app.use('/prodi', prodiRoutes);
+app.use('/auth', authRoutes);
 
 // ---------- Handler 404 dan error handler (paling bawah) ----------
-app.use(notFoundHandler);
-app.use(errorHandler);
-
 app.use(notFoundHandler);
 app.use(errorHandler);
 

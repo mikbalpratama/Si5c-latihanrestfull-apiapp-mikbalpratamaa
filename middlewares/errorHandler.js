@@ -13,6 +13,13 @@ function errorHandler(err, req, res, next) {
     return res.status(400).json({ message: 'Format JSON tidak valid' });
   }
 
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyPattern || {})[0];
+    return res.status(409).json({
+      message: field ? `${field} sudah digunakan` : 'Data sudah ada',
+    });
+  }
+
   const status = err.status || 500;
 
   if (status === 500) {
